@@ -1,7 +1,6 @@
-
 class GhanaDiary {
     constructor() {
-        this.entries = this.loadEntries();
+        this.entries = [];
         this.currentEntry = null;
         this.init();
     }
@@ -160,7 +159,8 @@ class GhanaDiary {
         }
     }
 
-    loadPreviousEntries() {
+    async loadPreviousEntries() {
+        this.entries = await this.loadEntries();
         const entriesList = document.getElementById('entriesList');
 
         if (this.entries.length === 0) {
@@ -246,6 +246,63 @@ class GhanaDiary {
         }, 3000);
     }
 
+    loadEntries() {
+        try {
+            // Try to load from public JSON file first
+            return fetch('entries.json')
+                .then(response => response.json())
+                .then(data => data.entries || [])
+                .catch(() => {
+                    // Fallback to localStorage
+                    const stored = localStorage.getItem('ghanaDiaryEntries');
+                    return stored ? JSON.parse(stored) : [];
+                });
+        } catch (error) {
+            console.error('Error loading entries:', error);
+            return [];
+        }
+    }
+
+    saveEntries() {
+        try {
+            // Save to localStorage for immediate use
+            localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
+
+            // Also update the public entries.json file
+            this.updatePublicEntries();
+        } catch (error) {
+            console.error('Error saving entries:', error);
+            this.showNotification('Error saving entries', 'error');
+        }
+    }
+
+    updatePublicEntries() {
+        const exportData = {
+            exportDate: new Date().toISOString(),
+            entries: this.entries
+        };
+
+        // Create downloadable JSON file
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'entries.json';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        this.showNotification('Entries saved! Upload entries.json to Netlify to make public', 'info');
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     getMoodEmoji(mood) {
         const moodEmojis = {
             'connected': ' 🫶🏿 Feeling Connected 🫶🏿',
@@ -255,35 +312,10 @@ class GhanaDiary {
         };
         return moodEmojis[mood] || '';
     }
-
-    loadEntries() {
-        try {
-            const stored = localStorage.getItem('ghanaDiaryEntries');
-            return stored ? JSON.parse(stored) : [];
-        } catch (error) {
-            console.error('Error loading entries:', error);
-            return [];
-        }
-    }
-
-    saveEntries() {
-        try {
-            localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
-        } catch (error) {
-            console.error('Error saving entries:', error);
-            this.showNotification('Error saving entries', 'error');
-        }
-    }
-
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
 }
 
 // animations
-const style = document.createElement('style');
+var style = document.createElement('style');
 style.textContent = `
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
@@ -302,12 +334,12 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     window.diary = new GhanaDiary();
 });
 
 // keyboard shortcuts
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         window.diary.saveEntry();
@@ -321,14 +353,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 // export functionality
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     // export button 
-    const exportBtn = document.createElement('button');
+    var exportBtn = document.createElement('button');
     exportBtn.className = 'btn btn-secondary';
     exportBtn.innerHTML = 'Export';
-    exportBtn.onclick = () => window.diary.exportEntries();
+    exportBtn.onclick = function () { window.diary.exportEntries(); };
 
-    const controls = document.querySelector('.entry-controls');
+    var controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
 });
 
@@ -339,16 +371,16 @@ GhanaDiary.prototype.exportEntries = function () {
         return;
     }
 
-    const exportData = {
+    var exportData = {
         exportDate: new Date().toISOString(),
         entries: this.entries
     };
 
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
     a.href = url;
-    a.download = `ghana-diary-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = 'ghana-diary-export-' + new Date().toISOString().split('T')[0] + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
