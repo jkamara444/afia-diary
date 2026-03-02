@@ -159,8 +159,8 @@ class GhanaDiary {
         }
     }
 
-    loadPreviousEntries() {
-        this.entries = this.loadEntries();
+    async loadPreviousEntries() {
+        this.entries = await this.loadEntries();
         const entriesList = document.getElementById('entriesList');
 
         if (this.entries.length === 0) {
@@ -248,8 +248,15 @@ class GhanaDiary {
 
     loadEntries() {
         try {
-            const stored = localStorage.getItem('ghanaDiaryEntries');
-            return stored ? JSON.parse(stored) : [];
+            // Load from public entries.json file first
+            return fetch('entries.json')
+                .then(response => response.json())
+                .then(data => data.entries || [])
+                .catch(() => {
+                    // Fallback to localStorage if no public file
+                    const stored = localStorage.getItem('ghanaDiaryEntries');
+                    return stored ? JSON.parse(stored) : [];
+                });
         } catch (error) {
             console.error('Error loading entries:', error);
             return [];
@@ -273,13 +280,12 @@ class GhanaDiary {
             entries: this.entries
         };
 
+        // Create downloadable JSON file
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = 'entries.json';
-        a.style.display = 'block';
-        a.textContent = '📥 Download entries.json (Upload to Netlify)';
         a.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -298,8 +304,10 @@ class GhanaDiary {
 
         document.body.appendChild(a);
 
+        // Auto-click to download
         a.click();
 
+        // Remove button after 5 seconds
         setTimeout(() => {
             if (document.body.contains(a)) {
                 document.body.removeChild(a);
@@ -307,20 +315,6 @@ class GhanaDiary {
         }, 5000);
 
         this.showNotification('📥 entries.json downloaded! Upload to Netlify to make entries public', 'success');
-    }
-
-    loadPublicEntries() {
-        try {
-            return fetch('entries.json')
-                .then(response => response.json())
-                .then(data => data.entries || [])
-                .catch(() => {
-                    return this.loadEntries();
-                });
-        } catch (error) {
-            console.error('Error loading public entries:', error);
-            return this.loadEntries();
-        }
     }
 
     escapeHtml(text) {
@@ -391,21 +385,9 @@ document.addEventListener('DOMContentLoaded', function () {
     downloadBtn.innerHTML = 'JSON';
     downloadBtn.onclick = function () { window.diary.updatePublicEntries(); };
 
-    // load public entries button
-    var loadPublicBtn = document.createElement('button');
-    loadPublicBtn.className = 'btn btn-secondary';
-    loadPublicBtn.innerHTML = 'Load Public';
-    loadPublicBtn.onclick = function () {
-        window.diary.loadPublicEntries().then(entries => {
-            window.diary.entries = entries;
-            window.diary.loadPreviousEntries();
-        });
-    };
-
     var controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
     controls.appendChild(downloadBtn);
-    controls.appendChild(loadPublicBtn);
 });
 
 // export method to GhanaDiary class
