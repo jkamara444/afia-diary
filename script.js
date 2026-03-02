@@ -248,17 +248,47 @@ class GhanaDiary {
 
     loadEntries() {
         try {
-            // Load from public entries.json file first
-            return fetch('entries.json')
-                .then(response => response.json())
-                .then(data => data.entries || [])
-                .catch(() => {
-                    // Fallback to localStorage if no public file
-                    const stored = localStorage.getItem('ghanaDiaryEntries');
-                    return stored ? JSON.parse(stored) : [];
-                });
+            // your entries are hardcoded here for public viewing
+            return [
+                {
+                    id: "entry1",
+                    title: "Who are our Ancestors?",
+                    content: "\n\nI keep thinking about what it means to call someone an ancestor. I used to think it was strictly blood, strictly DNA, strictly who came from who. But that feels too narrow now... Ancestors can be yours even if you are not directly related at all. If you are tied through struggle, through care, through a shared history of loss or love, that feels just as real and maybe even more real.\n\nI think about Marcus Garvey like this. He never set foot on the African continent, yet he is venerated as an ancestor. There is something powerful about that. His body was not buried here. His feet did not press into this soil. But his ideas did. His dream of return, of Black sovereignty, of dignity, traveled further than he ever physically could.\n\nStill, I cannot ignore how the manifestation of DNA feels significant. When thinking about kin, and the parts of DNA that the museum has, these are nails and hair. The physical remnants of his son. The way a curl pattern repeats across generations. The way hands may look alike. DNA can make a person feel whole, and in the museum, it brings us closer to the physical form of Marcus Garvey. But it is not the only thing that creates a connection.\n\nThere is a system to all of this. Even in strengthening and forming relationships with ancestors, there are rituals. Pouring libation. Bringing them their favorite alcohol if you knew them. If you did not, then bring them a drink from their time period. It is thoughtful, and it is intentional. It says I see you, even if I never met you.",
+                    mood: "connected",
+                    date: "2026-03-01T09:30:00.000Z",
+                    wordCount: 15,
+                    charCount: 120
+                },
+                {
+                    id: "entry2",
+                    title: "Systems of Care",
+                    content: "Dear Diary,\n\nI have been thinking a lot about how systems are created, as none of this just appears out of nowhere. These systems around ancestors, libation, and ritual, they were made with purpose. They were created to connect people to those who came before them, and to make memory something almost more tangible.\n\nIn that same way, I had a stool. In Asante culture, a stool represents something similar to what the West understands as a crown. It denotes authority and marks kingship. I have always been interested in the royal hierarchies around chieftaincy, in the way power is symbolized and preserved, so the story of the Asante Golden Stool stays with me. The idea that a nation’s soul can reside in an object and that something carved from wood can carry lineage, spirit, and legitimacy is so beautiful. I thought it was very coincidental that, of all the tools, I was handed the stool.\n\nWhen I used the stool in my own system, I would place it down and move in a counterclockwise circle, pulling out weeds from the ground. I chose counterclockwise intentionally. It is cultural here in Ghana to move that way. My feet pressed into the dirt, and the ants crawling on my feet felt almost like a service to nature. It was simple, just me and the stool and the ground, but it felt structured. Like I was participating in something larger than myself, and when we finished, and I looked around, I was proud of myself and all my sub chiefs lol. Systems are not random..they are built. And when you step into them, you feel the weight of all the people who stepped there before you.",
+                    mood: "thoughtful",
+                    date: "2026-03-01T16:45:00.000Z",
+                    wordCount: 15,
+                    charCount: 125
+                },
+                {
+                    id: "entry3",
+                    title: "Unfilfilled Dreams - a conversation with Carmen",
+                    content: "I had a conversation with my Bronnie Henna, Carmen, aka my sub chief of tickling. We were talking about how Marcus Garvey never came to Africa, but is such a celebrated hero, even more so than he is in the United States. We discussed unfulfilled dreams, and more specifically, his unfulfilled dream of returning to Africa.\n\nHow he imagined and inspired others to have a physical homecoming that he never experienced in his lifetime. It reminded Carmen and me of the Paa Joe coffins, those sculptural coffins shaped like objects that represent the life someone lived or the dream they carried. They make space for desires that were never fully realized. In a way, Garvey’s dream feels like it is still moving. Like it did not die with him. Like every return, every reconnection is a piece of that dream coming into fruition.\n\nI think the fact too that the man who trained Paa Joe is the one that created the casket next to the Marcus Garvey sculpture that holds his DNA emphasizes this connection even more!",
+                    mood: "connected",
+                    date: "2026-03-02T07:15:00.000Z",
+                    wordCount: 15,
+                    charCount: 118
+                },
+                {
+                    id: "entry4",
+                    title: "Culture and Art as a Language",
+                    content: "I have been thinking about culture within art and how you can see differences just by looking closely. Yoruba and Akan art, for example, carry different beauty standards in their forms. You can tell by the eyes. In some Akan representations, even if someone had small eyes in real life, they might be portrayed with large eyes if they were considered beautiful. Big eyes symbolize beauty. Other design choices can symbolize that a person was alert, wise, and present. The art does not always aim to replicate exactly what was seen, but instead it aims to represent what was valued in the person.\n\n\ I find that fascinating. The way culture shapes perception so deeply that it even reshapes the body in art. A sculpted face with wide, rounded eyes feels different from one with narrower, more elongated features. The proportions communicate ideals. They communicate who was admired, who was seen as beautiful, and who was intelligent. \n\nArt becomes another system, another way of connecting to ancestors. Not just through blood, but through shared aesthetics, shared values, and shared ways of seeing beauty. And in that, I feel connected too in that I can look at a sculpture and see what traits the people they loved, loved about them <3",
+                    mood: "thoughtful",
+                    date: "2026-03-02T19:30:00.000Z",
+                    wordCount: 15,
+                    charCount: 115
+                }
+            ];
         } catch (error) {
-            console.error('Error loading entries:', error);
+            console.error('error loading entries:', error);
             return [];
         }
     }
@@ -266,55 +296,10 @@ class GhanaDiary {
     saveEntries() {
         try {
             localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
-
-            this.updatePublicEntries();
         } catch (error) {
-            console.error('Error saving entries:', error);
-            this.showNotification('Error saving entries', 'error');
+            console.error('error saving entries:', error);
+            this.showNotification('error saving entries', 'error');
         }
-    }
-
-    updatePublicEntries() {
-        const exportData = {
-            exportDate: new Date().toISOString(),
-            entries: this.entries
-        };
-
-        // Create downloadable JSON file
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'entries.json';
-        a.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--ghana-green);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-family: var(--sans);
-            font-weight: 600;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            cursor: pointer;
-        `;
-
-        document.body.appendChild(a);
-
-        // Auto-click to download
-        a.click();
-
-        // Remove button after 5 seconds
-        setTimeout(() => {
-            if (document.body.contains(a)) {
-                document.body.removeChild(a);
-            }
-        }, 5000);
-
-        this.showNotification('📥 entries.json downloaded! Upload to Netlify to make entries public', 'success');
     }
 
     escapeHtml(text) {
@@ -379,15 +364,8 @@ document.addEventListener('DOMContentLoaded', function () {
     exportBtn.innerHTML = 'Export';
     exportBtn.onclick = function () { window.diary.exportEntries(); };
 
-    // download entries button
-    var downloadBtn = document.createElement('button');
-    downloadBtn.className = 'btn btn-primary';
-    downloadBtn.innerHTML = 'JSON';
-    downloadBtn.onclick = function () { window.diary.updatePublicEntries(); };
-
     var controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
-    controls.appendChild(downloadBtn);
 });
 
 // export method to GhanaDiary class
