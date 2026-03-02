@@ -1,4 +1,3 @@
-// Ghana Diary JavaScript - Modern Diary Functionality
 
 class GhanaDiary {
     constructor() {
@@ -15,20 +14,20 @@ class GhanaDiary {
     }
 
     setupEventListeners() {
-        // Button events
+        // button
         document.getElementById('newEntryBtn').addEventListener('click', () => this.newEntry());
         document.getElementById('saveEntryBtn').addEventListener('click', () => this.saveEntry());
         document.getElementById('clearBtn').addEventListener('click', () => this.clearCurrentEntry());
 
-        // Text area events
+        // text
         const textarea = document.getElementById('diaryTextarea');
         textarea.addEventListener('input', () => this.updateWordCount());
         textarea.addEventListener('input', () => this.autoSave());
 
-        // Title input event
+        // title
         document.getElementById('entryTitle').addEventListener('input', () => this.autoSave());
 
-        // Mood selector event
+        // moods
         document.getElementById('moodSelect').addEventListener('change', () => this.autoSave());
     }
 
@@ -50,7 +49,7 @@ class GhanaDiary {
         this.updateCurrentDate();
         document.getElementById('entryTitle').focus();
 
-        // Add animation effect
+        // animating
         const diaryPage = document.querySelector('.diary-page');
         diaryPage.style.animation = 'none';
         setTimeout(() => {
@@ -88,13 +87,13 @@ class GhanaDiary {
         };
 
         if (this.currentEntry) {
-            // Update existing entry
+            // update functionality
             const index = this.entries.findIndex(e => e.id === this.currentEntry.id);
             if (index !== -1) {
                 this.entries[index] = entry;
             }
         } else {
-            // Add new entry
+            // new entry
             this.entries.unshift(entry);
         }
 
@@ -105,18 +104,18 @@ class GhanaDiary {
     }
 
     autoSave() {
-        // Auto-save functionality (debounced)
+        // auto save 
         clearTimeout(this.autoSaveTimeout);
         this.autoSaveTimeout = setTimeout(() => {
             const content = document.getElementById('diaryTextarea').value.trim();
-            if (content && content.length > 50) { // Only auto-save if there's substantial content
+            if (content && content.length > 50) {
                 this.saveEntry();
             }
         }, 2000);
     }
 
     startAutoSave() {
-        // Auto-save every 30 seconds if there's content
+        // timed auto save just in case
         setInterval(() => {
             const content = document.getElementById('diaryTextarea').value.trim();
             if (content && content.length > 50) {
@@ -143,7 +142,6 @@ class GhanaDiary {
 
             this.updateWordCount();
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
@@ -195,15 +193,6 @@ class GhanaDiary {
         }).join('');
     }
 
-    getMoodEmoji(mood) {
-        const moods = {
-            connected: '🤝',
-            thoughtful: '🤔',
-            sorrowful: '💙'
-        };
-        return moods[mood] || '🤝';
-    }
-
     updateWordCount() {
         const content = document.getElementById('diaryTextarea').value;
         const wordCount = this.countWords(content);
@@ -221,17 +210,7 @@ class GhanaDiary {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
 
-    saveEntries() {
-        localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
-    }
-
-    loadEntries() {
-        const saved = localStorage.getItem('ghanaDiaryEntries');
-        return saved ? JSON.parse(saved) : [];
-    }
-
     showNotification(message, type = 'info') {
-        // Create notification element
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
@@ -247,7 +226,6 @@ class GhanaDiary {
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         `;
 
-        // Set background color based on type
         const colors = {
             success: 'var(--ghana-green)',
             warning: 'var(--ghana-yellow)',
@@ -257,16 +235,44 @@ class GhanaDiary {
         notification.style.background = colors[type] || colors.info;
         notification.textContent = message;
 
-        // Add to page
+        // add to page
         document.body.appendChild(notification);
 
-        // Remove after 3 seconds
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease-out';
             setTimeout(() => {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
+    }
+
+    getMoodEmoji(mood) {
+        const moodEmojis = {
+            'connected': ' 🫶🏿 Feeling Connected 🫶🏿',
+            'thoughtful': '💆🏿‍♀️ Thinking Deeply 💆🏿‍♀️',
+            'calm': '🧘🏿‍♀️ Feeling Calm 🧘🏿‍♀️',
+            'sorrowful': '🤲🏿 Feeling Sorrow 🤲🏿'
+        };
+        return moodEmojis[mood] || '';
+    }
+
+    loadEntries() {
+        try {
+            const stored = localStorage.getItem('ghanaDiaryEntries');
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading entries:', error);
+            return [];
+        }
+    }
+
+    saveEntries() {
+        try {
+            localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
+        } catch (error) {
+            console.error('Error saving entries:', error);
+            this.showNotification('Error saving entries', 'error');
+        }
     }
 
     escapeHtml(text) {
@@ -276,7 +282,7 @@ class GhanaDiary {
     }
 }
 
-// Add CSS animations
+// animations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes fadeIn {
@@ -296,14 +302,12 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Initialize the diary when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.diary = new GhanaDiary();
 });
 
-// Keyboard shortcuts
+// keyboard shortcuts
 document.addEventListener('keydown', (e) => {
-    // Ctrl/Cmd + S to save
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         window.diary.saveEntry();
@@ -316,19 +320,19 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Export functionality
+// export functionality
 document.addEventListener('DOMContentLoaded', () => {
-    // Add export button to controls
+    // export button 
     const exportBtn = document.createElement('button');
     exportBtn.className = 'btn btn-secondary';
-    exportBtn.innerHTML = '<span class="btn-icon">📥</span> Export';
+    exportBtn.innerHTML = 'Export';
     exportBtn.onclick = () => window.diary.exportEntries();
 
     const controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
 });
 
-// Add export method to GhanaDiary class
+// export method to GhanaDiary class
 GhanaDiary.prototype.exportEntries = function () {
     if (this.entries.length === 0) {
         this.showNotification('No entries to export', 'warning');
