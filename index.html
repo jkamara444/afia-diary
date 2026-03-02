@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana Diary - My Personal Journal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="diary-container">
+        <header class="diary-header">
+            <div class="ghana-flag">
+                <div class="flag-star">★</div>
+                <div class="flag-colors">
+                    <div class="red"></div>
+                    <div class="yellow"></div>
+                    <div class="green"></div>
+                </div>
+            </div>
+            <h1 class="diary-title">My Ghana Diary</h1>
+            <div class="date-display" id="currentDate"></div>
+        </header>
+
+        <main class="diary-content">
+            <div class="entry-controls">
+                <button class="btn btn-primary" id="newEntryBtn">
+                    <span class="btn-icon">✦</span>
+                    New Entry
+                </button>
+                <button class="btn btn-secondary" id="saveEntryBtn">
+                    <span class="btn-icon">♦</span>
+                    Save Entry
+                </button>
+                <button class="btn btn-tertiary" id="clearBtn">
+                    <span class="btn-icon">✕</span>
+                    Clear
+                </button>
+            </div>
+
+            <div class="diary-page">
+                <div class="thought-bubbles-left">
+                    <div class="thought-bubble leaf">🌿</div>
+                    <div class="thought-bubble tree">🌳</div>
+                    <div class="thought-bubble leaf">🍃</div>
+                    <div class="thought-bubble tree">🌲</div>
+                </div>
+
+                <div class="thought-bubbles-right">
+                    <div class="thought-bubble leaf">🌱</div>
+                    <div class="thought-bubble tree">🎋</div>
+                    <div class="thought-bubble leaf">🍀</div>
+                    <div class="thought-bubble tree">🌴</div>
+                </div>
+
+                <div class="page-decoration">
+                    <div class="star-pattern">★</div>
+                    <div class="star-pattern">★</div>
+                    <div class="star-pattern">★</div>
+                </div>
+
+                <div class="entry-header">
+                    <input type="text" class="entry-title" placeholder="Entry Title..." id="entryTitle">
+                    <div class="entry-meta">
+                        <span class="entry-date" id="entryDate"></span>
+                        <span class="mood-selector">
+                            <label>Mood:</label>
+                            <select id="moodSelect">
+                                <option value="">Select mood...</option>
+                                <option value="connected"> 🫶🏿 Feeling Connected 🫶🏿</option>
+                                <option value="thoughtful">💆🏿‍♀️ Thinking Deeply 💆🏿‍♀️</option>
+                                 <option value="calm">🧘🏿‍♀️ Feeling Calm 🧘🏿‍♀️</option>
+                                <option value="sorrowful">🤲🏿 Feeling Sorrow 🤲🏿</option>
+                            </select>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="entry-content">
+                    <textarea class="diary-textarea" id="diaryTextarea" placeholder="Dear Diary...
+
+""></textarea>
+                </div>
+
+                <div class="word-count">
+                    <span id="wordCount">0</span> words | <span id="charCount">0</span> characters
+                </div>
+            </div>
+
+            <div class="previous-entries">
+                <h2 class="entries-title">Previous Entries</h2>
+                <div class="entries-list" id="entriesList">
+                </div>
+            </div>
+        </main>
+
+        <footer class="diary-footer">
+            <div class="footer-decoration">
+                <div class="star-pattern">★</div>
+                <div class="star-pattern">★</div>
+                <div class="star-pattern">★</div>
+            </div>
+            <p>My personal space for thoughts, dreams, and reflections</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
