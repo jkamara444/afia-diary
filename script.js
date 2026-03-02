@@ -248,12 +248,10 @@ class GhanaDiary {
 
     loadEntries() {
         try {
-            // Try to load from public JSON file first
             return fetch('entries.json')
                 .then(response => response.json())
                 .then(data => data.entries || [])
                 .catch(() => {
-                    // Fallback to localStorage
                     const stored = localStorage.getItem('ghanaDiaryEntries');
                     return stored ? JSON.parse(stored) : [];
                 });
@@ -265,10 +263,8 @@ class GhanaDiary {
 
     saveEntries() {
         try {
-            // Save to localStorage for immediate use
             localStorage.setItem('ghanaDiaryEntries', JSON.stringify(this.entries));
 
-            // Also update the public entries.json file
             this.updatePublicEntries();
         } catch (error) {
             console.error('Error saving entries:', error);
@@ -282,7 +278,6 @@ class GhanaDiary {
             entries: this.entries
         };
 
-        // Create downloadable JSON file
         const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -308,10 +303,8 @@ class GhanaDiary {
 
         document.body.appendChild(a);
 
-        // Auto-click to download
         a.click();
 
-        // Remove button after 5 seconds
         setTimeout(() => {
             if (document.body.contains(a)) {
                 document.body.removeChild(a);
@@ -369,7 +362,6 @@ document.addEventListener('keydown', function (e) {
         window.diary.saveEntry();
     }
 
-    // Ctrl/Cmd + N for new entry
     if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
         e.preventDefault();
         window.diary.newEntry();
@@ -387,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // download entries button
     var downloadBtn = document.createElement('button');
     downloadBtn.className = 'btn btn-primary';
-    downloadBtn.innerHTML = '📥 Download entries.json';
+    downloadBtn.innerHTML = 'JSON';
     downloadBtn.onclick = function () { window.diary.updatePublicEntries(); };
 
     var controls = document.querySelector('.entry-controls');
