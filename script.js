@@ -288,13 +288,37 @@ class GhanaDiary {
         const a = document.createElement('a');
         a.href = url;
         a.download = 'entries.json';
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        a.style.display = 'block';
+        a.textContent = '📥 Download entries.json (Upload to Netlify)';
+        a.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--ghana-green);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: var(--sans);
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+        `;
 
-        this.showNotification('Entries saved! Upload entries.json to Netlify to make public', 'info');
+        document.body.appendChild(a);
+
+        // Auto-click to download
+        a.click();
+
+        // Remove button after 5 seconds
+        setTimeout(() => {
+            if (document.body.contains(a)) {
+                document.body.removeChild(a);
+            }
+        }, 5000);
+
+        this.showNotification('📥 entries.json downloaded! Upload to Netlify to make entries public', 'success');
     }
 
     escapeHtml(text) {
@@ -360,8 +384,15 @@ document.addEventListener('DOMContentLoaded', function () {
     exportBtn.innerHTML = 'Export';
     exportBtn.onclick = function () { window.diary.exportEntries(); };
 
+    // download entries button
+    var downloadBtn = document.createElement('button');
+    downloadBtn.className = 'btn btn-primary';
+    downloadBtn.innerHTML = '📥 Download entries.json';
+    downloadBtn.onclick = function () { window.diary.updatePublicEntries(); };
+
     var controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
+    controls.appendChild(downloadBtn);
 });
 
 // export method to GhanaDiary class
