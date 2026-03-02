@@ -159,8 +159,8 @@ class GhanaDiary {
         }
     }
 
-    async loadPreviousEntries() {
-        this.entries = await this.loadEntries();
+    loadPreviousEntries() {
+        this.entries = this.loadEntries();
         const entriesList = document.getElementById('entriesList');
 
         if (this.entries.length === 0) {
@@ -248,13 +248,8 @@ class GhanaDiary {
 
     loadEntries() {
         try {
-            return fetch('entries.json')
-                .then(response => response.json())
-                .then(data => data.entries || [])
-                .catch(() => {
-                    const stored = localStorage.getItem('ghanaDiaryEntries');
-                    return stored ? JSON.parse(stored) : [];
-                });
+            const stored = localStorage.getItem('ghanaDiaryEntries');
+            return stored ? JSON.parse(stored) : [];
         } catch (error) {
             console.error('Error loading entries:', error);
             return [];
@@ -312,6 +307,20 @@ class GhanaDiary {
         }, 5000);
 
         this.showNotification('📥 entries.json downloaded! Upload to Netlify to make entries public', 'success');
+    }
+
+    loadPublicEntries() {
+        try {
+            return fetch('entries.json')
+                .then(response => response.json())
+                .then(data => data.entries || [])
+                .catch(() => {
+                    return this.loadEntries();
+                });
+        } catch (error) {
+            console.error('Error loading public entries:', error);
+            return this.loadEntries();
+        }
     }
 
     escapeHtml(text) {
@@ -382,9 +391,21 @@ document.addEventListener('DOMContentLoaded', function () {
     downloadBtn.innerHTML = 'JSON';
     downloadBtn.onclick = function () { window.diary.updatePublicEntries(); };
 
+    // load public entries button
+    var loadPublicBtn = document.createElement('button');
+    loadPublicBtn.className = 'btn btn-secondary';
+    loadPublicBtn.innerHTML = 'Load Public';
+    loadPublicBtn.onclick = function () {
+        window.diary.loadPublicEntries().then(entries => {
+            window.diary.entries = entries;
+            window.diary.loadPreviousEntries();
+        });
+    };
+
     var controls = document.querySelector('.entry-controls');
     controls.appendChild(exportBtn);
     controls.appendChild(downloadBtn);
+    controls.appendChild(loadPublicBtn);
 });
 
 // export method to GhanaDiary class
